@@ -1,11 +1,10 @@
+
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import Navbar from './components/Navbar'
 import HabitItem from './components/HabitItem'
 import type { Habit } from './types/Habit'
 import './App.css'
-
-
 
 const STORAGE_KEY = 'myhabits_data'
 
@@ -83,10 +82,12 @@ function App() {
   const [showForm, setShowForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [newDescription, setNewDescription] = useState('')
+  const [newNameError, setNewNameError] = useState('')
 
   const [editId, setEditId] = useState<number | null>(null)
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editNameError, setEditNameError] = useState('')
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits))
@@ -114,11 +115,16 @@ function App() {
   function addHabit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!newName.trim()) return
+    const trimmedName = newName.trim()
+
+    if (!trimmedName) {
+      setNewNameError('Please enter a habit name.')
+      return
+    }
 
     const newHabit: Habit = {
       id: Date.now(),
-      name: newName.trim(),
+      name: trimmedName,
       description: newDescription.trim(),
       completedDates: [],
     }
@@ -127,6 +133,7 @@ function App() {
 
     setNewName('')
     setNewDescription('')
+    setNewNameError('')
     setShowForm(false)
   }
 
@@ -134,19 +141,27 @@ function App() {
     setEditId(habit.id)
     setEditName(habit.name)
     setEditDescription(habit.description)
+    setEditNameError('')
   }
 
   function saveEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!editName.trim() || editId === null) return
+    const trimmedName = editName.trim()
+
+    if (!trimmedName) {
+      setEditNameError('Habit name cannot be empty.')
+      return
+    }
+
+    if (editId === null) return
 
     setHabits((previous) =>
       previous.map((habit) =>
         habit.id === editId
           ? {
               ...habit,
-              name: editName.trim(),
+              name: trimmedName,
               description: editDescription.trim(),
             }
           : habit,
@@ -156,6 +171,7 @@ function App() {
     setEditId(null)
     setEditName('')
     setEditDescription('')
+    setEditNameError('')
   }
 
   function deleteHabit(id: number) {
@@ -192,7 +208,10 @@ function App() {
 
             <button
               className="add-habit-btn"
-              onClick={() => setShowForm((previous) => !previous)}
+              onClick={() => {
+                setShowForm((previous) => !previous)
+                setNewNameError('')
+              }}
             >
               + Add Habit
             </button>
@@ -206,9 +225,18 @@ function App() {
                 type="text"
                 placeholder="Enter habit name"
                 value={newName}
-                onChange={(event) => setNewName(event.target.value)}
+                onChange={(event) => {
+                  setNewName(event.target.value)
+                  setNewNameError('')
+                }}
                 required
               />
+
+              {newNameError && (
+                <p style={{ color: '#dc2626', fontSize: '13px', margin: '4px 0 10px' }}>
+                  {newNameError}
+                </p>
+              )}
 
               <input
                 type="text"
@@ -225,7 +253,12 @@ function App() {
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false)
+                    setNewName('')
+                    setNewDescription('')
+                    setNewNameError('')
+                  }}
                 >
                   Cancel
                 </button>
@@ -242,10 +275,19 @@ function App() {
                       <input
                         type="text"
                         value={editName}
-                        onChange={(event) => setEditName(event.target.value)}
+                        onChange={(event) => {
+                          setEditName(event.target.value)
+                          setEditNameError('')
+                        }}
                         placeholder="Habit name"
                         required
                       />
+
+                      {editNameError && (
+                        <p style={{ color: '#dc2626', fontSize: '13px', margin: '4px 0 10px' }}>
+                          {editNameError}
+                        </p>
+                      )}
 
                       <input
                         type="text"
@@ -264,7 +306,12 @@ function App() {
                         <button
                           type="button"
                           className="cancel-btn"
-                          onClick={() => setEditId(null)}
+                          onClick={() => {
+                            setEditId(null)
+                            setEditName('')
+                            setEditDescription('')
+                            setEditNameError('')
+                          }}
                         >
                           Cancel
                         </button>
