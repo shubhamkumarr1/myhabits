@@ -10,7 +10,6 @@ type HabitItemProps = {
 
 function getTodayDate() {
   const today = new Date()
-
   const year = today.getFullYear()
   const month = String(today.getMonth() + 1).padStart(2, '0')
   const day = String(today.getDate()).padStart(2, '0')
@@ -39,6 +38,7 @@ function HabitItem({
 
       <div className="habit-details">
         <h3>{habit.name}</h3>
+
         {habit.description && <p>{habit.description}</p>}
       </div>
 

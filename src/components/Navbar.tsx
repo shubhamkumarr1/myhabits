@@ -1,8 +1,20 @@
 
-function Navbar() {
+type NavbarProps = {
+  activePage?: 'dashboard' | 'analytics' | 'settings'
+  onNavigate?: (page: 'dashboard' | 'analytics' | 'settings') => void
+}
+
+function Navbar({
+  activePage = 'dashboard',
+  onNavigate,
+}: NavbarProps) {
   return (
     <header className="navbar">
-      <a href="#dashboard" className="logo">
+      <a
+        href="#dashboard"
+        className="logo"
+        onClick={() => onNavigate?.('dashboard')}
+      >
         <span className="logo-icon">
           <svg
             viewBox="0 0 24 24"
@@ -36,17 +48,29 @@ function Navbar() {
       </a>
 
       <nav>
-        <a href="#dashboard" className="active">
+        <a
+          href="#dashboard"
+          className={activePage === 'dashboard' ? 'active' : ''}
+          onClick={() => onNavigate?.('dashboard')}
+        >
           Dashboard
         </a>
 
-        <span className="nav-upcoming" title="Coming soon">
+        <a
+          href="#analytics"
+          className={activePage === 'analytics' ? 'active' : ''}
+          onClick={() => onNavigate?.('analytics')}
+        >
           Analytics
-        </span>
+        </a>
 
-        <span className="nav-upcoming" title="Coming soon">
+        <a
+          href="#settings"
+          className={activePage === 'settings' ? 'active' : ''}
+          onClick={() => onNavigate?.('settings')}
+        >
           Settings
-        </span>
+        </a>
       </nav>
     </header>
   )
